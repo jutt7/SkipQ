@@ -1,0 +1,1 @@
+ HWLambda = self.create_lambda("MyHelloLambda","./resources","WebHealth_lambda.lambda_handler",lambda_role)

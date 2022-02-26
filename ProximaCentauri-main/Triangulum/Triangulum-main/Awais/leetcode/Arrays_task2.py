@@ -1,0 +1,33 @@
+'''
+Given an integer array nums sorted in non-decreasing order, remove the duplicates in-place such that each unique element 
+appears only once. The relative order of the elements should be kept the same.
+
+'''
+
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        
+                n = len(nums)
+                if n == 0 or n == 1:
+                    return n
+
+                temp = list(range(n))
+
+
+                j = 0;
+                for i in range(0, n-1):
+
+
+                    if nums[i] != nums[i+1]:
+                        temp[j] = nums[i]
+                        j += 1
+
+
+                temp[j] = nums[n-1]
+                j += 1
+
+
+                for i in range(0, j):
+                    nums[i] = temp[i]
+
+                return j

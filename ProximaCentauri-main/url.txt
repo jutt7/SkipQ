@@ -1,0 +1,94 @@
+import datetime
+import urllib3
+import boto3
+import json
+
+def lambda_handler(event, context):
+   # URL_TO_MONITOR = "www.skipq.org"
+    values = dict()
+    v = []
+    
+    
+    
+    client = boto3.client(
+    's3',
+    aws_access_key_id = 'AKIAUTEXLE6CCDHCAN7P',
+    aws_secret_access_key = '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',
+    region_name = 'us-east-2')
+    
+    # Fetch the list of existing buckets
+    clientResponse = client.list_buckets()
+    
+    # Print the bucket names one by one
+    # print('Printing bucket names...')
+    # for bucket in clientResponse['Buckets']:
+    #     print(f'Bucket Name: {bucket["Name"]}')
+        
+    # Create the S3 object
+    obj = client.get_object(
+    Bucket='awaiswebhealthbucket',
+    Key='URLS.json'
+    )
+    
+    # Read data from the S3 object
+    data = obj['Body'].read()
+    y = json.loads(data)
+    links = []
+    # Print the data frame
+    print('printing links...')
+    for link in y['URLS_TO_MONITOR']:
+        links.append(link)
+        print(link)
+        avail = get_availability(link)
+        latency = get_latency(link)
+        
+        v.append({'Status':link,"availability": avail, "latency": latency})
+        
+    print('printing values-----------')
+    print(v)
+    return v   
+    # print('Printing the data frame...')
+    # print(y['URLS_TO_MONITOR'])
+    
+    #s3_client = boto3.client('s3')
+    #response = s3_client.get_object(Bucket='awaiswebhealthbucket',key='text.json')
+    #data = response['Body'].read()
+    #print(data)
+    
+    
+    
+    # values = dict()
+    
+  
+        
+        
+    # avail = get_availability(URL_TO_MONITOR)
+
+    # latency = get_latency(URL_TO_MONITOR)
+
+   # values.update({ "availability": avail, "latency": latency})
+   # values.update({'Status':status,"availability": avail, "latency": latency})
+    # print('printing values-----------')
+    # print(values)
+    # return values
+    
+    
+def get_availability(url):
+    ### Returns 1.0 if available and 0 if not
+    http = urllib3.PoolManager()
+    response = http.request("GET", url)
+    if response.status == 200:
+        return 1.0
+    else:
+        return 0.0
+
+
+def get_latency(url):
+    ### Returns latency in seconds
+    http = urllib3.PoolManager()
+    start = datetime.datetime.now()
+    response = http.request("GET", url)
+    end = datetime.datetime.now()
+    delta = end - start
+    latencySec = round(delta.microseconds * .000001, 6)
+    return latencySec

@@ -1,0 +1,11 @@
+import json
+def lambda_handler(events, context):
+    #db = dynamoDBTable()
+    print('----------printing events ------------')
+    print(events)
+    msg = events['Records'][0]['Sns']['Message']
+    msg = json.loads(msg)
+    alarm_name = msg['AlarmName']
+    created_date = msg['StateChangeTime']
+    
+    #db.dynamo_data(constants.table_name, msg,events['Records'][0]['Sns']['Timestamp']])
